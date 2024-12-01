@@ -2,6 +2,7 @@ package it.unibo.mvc;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
             view.setObserver(this);
             view.start();
         }
-        Map<String, String> configMap = new HashMap<>();
+        final Map<String, String> configMap = new HashMap<>();
         final Configuration.Builder confBuild = new Configuration.Builder();
         try (var info = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream(FILENAME)))) {
             for (var line = info.readLine(); line != null; line = info.readLine()) {
@@ -43,7 +44,7 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
             } else if (configMap.containsKey("attempts")) {
                 confBuild.setAttempts(Integer.parseInt(configMap.get("attempts")));
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             showError(e.getMessage());
         }
         final Configuration configuration = confBuild.build();
@@ -97,7 +98,11 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
      * @throws FileNotFoundException 
      */
     public static void main(final String... args) throws FileNotFoundException {
-        new DrawNumberApp(new DrawNumberViewImpl(), new DrawNumberViewImpl(), new PrintStreamView(System.out), new PrintStreamView("logger.txt"));
+        new DrawNumberApp(
+            new DrawNumberViewImpl(),
+            new DrawNumberViewImpl(),
+            new PrintStreamView(System.out),
+            new PrintStreamView("logger.txt"));
     }
 
 }
